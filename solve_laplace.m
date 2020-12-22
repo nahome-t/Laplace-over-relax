@@ -15,19 +15,22 @@ function [psi,hist_values] = solve_laplace(init_psi,alpha, N_iter)
 maxI = size(init_psi, 1);
 maxJ = size(init_psi, 2);
 
-% Will store the 
+% Will store the historical values over each iteration of the top left box,
+% middle box and bottom box (WARNING: Requires grid to be nxn where n is odd 
+% so that there exists a single box in the middle of the grid)
 hist_values = zeros(N_iter, 3);
 
 
 psi = init_psi; 
 for x=1:N_iter %
     for i=2:maxI-1
-        disp('hahahha')
         for j = maxJ-1:-1:2 %Iterates backwards
-            R = psi(i, j+1)+psi(i, j-1) + psi(i+1, j)+ psi(i-1, j);
-            psi = psi + alpha*R/4;
+            disp([i, j]);
+            R = psi(i, j+1)+psi(i, j-1) + psi(i+1, j)+ psi(i-1, j)-4*psi(i, j);
+            disp(R)
+            psi(i, j) = psi(i, j) + alpha*R/4;
         end
     end
- 
 end
+
 
