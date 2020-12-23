@@ -9,23 +9,28 @@
 % respect to x clearly negates the expression and as sin(x) -> cos(x) ->
 % -sin(x) and 
 
-init_psi = zeros(40);
-n = size(init_psi, 1); % Gives dimensions for grid, using square 7x7 currently
-% So should return 7
+init_psi = zeros(n);
+n = 7; % Gives dimensions for grid, using square 7x7 currently
+max_itr = 30; % Stores maximum number of iterations done 
+alpha = 1.01; % Over relaxation constant
 
-% As we're calculating sln with x and y going from 0 to 1 and the grid is
-% split into a nxn grid then we know that the width andlength of each box 
-% is 1/n
-d = 1/size(init_psi, 1); 
+% As we're calculating sln on a 1 by 1 area and so width/length of box =
+% 1/n
+d = 1/n; 
+
+
 for k=1:n
     % B.c for top is that psi = sin(x)sinh(1) and as each box corresponds
     % to a width/length of d. x = d*j, y =1-d*i
     init_psi(1, k) = sin(d*k)*sinh(1);
     init_psi(k, end) = sin(1)*sinh(1-d*k);
 end
-h = heatmap(init_psi);
-psi = solve_laplace(init_psi, 1.5, 30);
 
+[psi, hist_values] = solve_laplace(init_psi, 1.5, max_itr);
+
+disp(hist_values)
+% Generates the expected value for psi (in order to verify that the method
+% correctly estimates the solution
 exp_psi = zeros(7);
 for i = 1:n
     for j=1:n
@@ -33,6 +38,11 @@ for i = 1:n
     end
 end
 
-heatmap(psi)
-figure;
-heatmap(exp_psi)
+%heatmap(psi)
+%figure;
+%heatmap(exp_psi)
+%figure;
+scatter(1:max_itr, hist_values(:, 1))
+scatter(1:max_itr, hist_values(:, 2))
+scatter(1:max_itr, hist_values(:, 3))
+

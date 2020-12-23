@@ -20,14 +20,29 @@ maxJ = size(init_psi, 2);
 % so that there exists a single box in the middle of the grid)
 hist_values = zeros(N_iter, 3);
 
-
+% Contains data on what co-ordinates are tracked (in this case 2, 2
+tracked_values = [2, 2; 4, 4; 6, 6];
+% Psi value to be iterated over
 psi = init_psi; 
 for x=1:N_iter %
     for i=2:maxI-1
-        for j = maxJ-1:-1:2 %Iterates backwards
-            disp([i, j]);
+        for j = maxJ-1:-1:2 %Iterates backwards as we're starting from top
+            % Right corner
+            
+            % Iterates over all the tracked values, if the coordinates
+            % match up it'll add the value of psi during that iteration on
+            % to the historical values array, where each column corresponds
+            % to a coordinate whose vakue is being tracked
+            
+            for k = 1:3
+                if all([i, j] == tracked_values(k, :))
+                    hist_values(x, k) = psi(i, j);
+                end
+            end
+            
+            % Calculates the residue and adds it on to the value for 
+            % psi(i, j) in order to find a better approximation for psi
             R = psi(i, j+1)+psi(i, j-1) + psi(i+1, j)+ psi(i-1, j)-4*psi(i, j);
-            disp(R)
             psi(i, j) = psi(i, j) + alpha*R/4;
         end
     end
